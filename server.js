@@ -67,12 +67,14 @@ app.get("/", (req, res) => {
 app.get("/cheese", async (req, res) => {
   //Try (?)
   try {
+    //Fetch all cheese from the database, .find built in to "Cheese", pass empty object to return all cheese
+    const cheese = await Cheese.find({})
     //Send all people (in database?)
-    res.json(await Cheese.find({}));
+    res.json(cheese)
     //Catch (?)
   } catch (error) {
     //Send error message
-    res.status(400).json(error);
+    res.status(400).json({ error });
   }
 });
 
@@ -81,8 +83,10 @@ app.get("/cheese", async (req, res) => {
 app.post("/cheese", async (req, res) => {
   //Try (?)
   try {
-    //Return the Cheeese content in json format
-    res.json(await Cheese.create(req.body));
+    //Create the new cheese
+    const cheese = await Cheese.create(req.body);
+    //Send newly created cheese as JSON
+    res.json(cheese)
     //Catch (?)
   } catch (error) {
     //Send error message
@@ -90,33 +94,40 @@ app.post("/cheese", async (req, res) => {
   }
 });
 
+//Cheese Show Route
+app.get("/cheese/:id", async (req, res) => {
+  try {
+    const cheese = await Cheese.findById(req.params.id);
+    res.json(cheese);
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+})
+
 //Cheese Update Route
 //When the /cheese:/:id put route is hit, execute the next line of code as part of an asynchronous request to the (database?)
 app.put("/cheese/:id", async (req, res) => {
   //Try (?)
   try {
-    //Search by ID and update json data based on ID
-    res.json(
-      await Cheese.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    );
+    const cheese = await Cheese.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(cheese);
     //Catch (?) kind of like else if (error):
   } catch (error) {
     //Then display 400 error message (if program 'catches' an error)
-    res.status(400).json(error);
+    res.status(400).json({ error });
   }
 });
 
-//People Create Route
+//People Delete Route
 //When the /cheese:/:id delete route is hit, execute the next line of code as part of an asynchornous request to the (database ?)
-app.delete("cheese/:id", async (req, res) => {
+app.delete("/cheese/:id", async (req, res) => {
   //Try (?)
   try {
-    //Search by ID and delete the json data based on ID
-    res.json(await Cheese.findByIdAndRemove(req.params.id));
-    //Catch (?) kind of like else if (error):
+    const cheese = await Cheese.findByIdAndRemove(req.params.id)
+    res.status(204).json(cheese)
   } catch (error) {
     //Then display 400 error message (if program 'catches' an error
-    res.status(400).json(error);
+    res.status(400).json({ error });
   }
 });
 
@@ -126,4 +137,4 @@ app.delete("cheese/:id", async (req, res) => {
 //Tells this application where (which port) to receive information from/on, and to console log a message when it is doing so:
 app.listen(PORT, () => console.log(`listening on PORT ${PORT}`));
 
-//Progress Report: Continue by creating delete routes etc. and deleting the json info that you accidentally created while trying to add the first Cheese.
+//Progress Report: Check that endpoints are working on Postman.
